@@ -1,0 +1,8 @@
+#!/bin/bash
+
+args=("$@")
+
+export USER_SITE="/opt/bin/python"
+export ENABLE_USER_SITE="1"
+
+exec "${args[@]}"
