@@ -24,7 +24,7 @@ export USER_SITE="/opt/bin/python"
 export ENABLE_USER_SITE="1"
 
 # Execute the original Lambda runtime with the modified environment
-if [ "$TEST_AND_EXIT" = "1" ]; then
+if [ "${TEST_AND_EXIT:-0}" = "1" ]; then
     timeout_secs="${TEST_AND_EXIT_TIMEOUT:-2}"
     echo "TEST_AND_EXIT is set, running with timeout of ${timeout_secs}s"
     timeout "${timeout_secs}s" "${args[@]}"
