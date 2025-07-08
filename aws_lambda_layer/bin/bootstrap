@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # AWS Lambda Layer Bootstrap Script for X-Ray Instrumentation
 #
