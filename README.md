@@ -304,22 +304,3 @@ And warnings for any issues:
 ```
 [WARNING] botocore version X.Y.Z is less than required 1.11.3. Skipping AWS X-Ray instrumentation.
 ```
-
-## File Structure
-
-```
-aws_lambda_layer/
-   bin/
-      bootstrap              # Runtime environment setup
-      python/
-          sitecustomize.py   # Auto-instrumentation logic
-   build/                     # Build artifacts (generated)
-   dist/                      # Layer distribution (generated)
-   Makefile                   # Build automation
-   pyproject.toml             # Project dependencies
-   README.md                  # This documentation
-```
-
-## License
-
-This project is designed for AWS Lambda X-Ray instrumentation and follows AWS best practices for layer development.
