@@ -5,5 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "aws-xray-sdk>=2.14.0",
     "wrapt>=1.17.2",
+]
+
+[dependency-groups]
+dev = [
+    "toml2json>=0.1.0",
 ]

@@ -15,8 +15,9 @@ $(BUILD_DIR)/layer: $(LAYER_SRC_FILES) uv.lock
 	@mkdir -p $@
 	@mkdir -p $@/bin/python-packages
 	cp -r aws_lambda_layer/* $@
-	uv export --format requirements.txt --no-hashes --no-dev > $@/requirements.txt
-	pip download -r $@/requirements.txt -d $@/bin/python-packages
+	cat pyproject.toml | uv run toml2json | jq -r '.project.dependencies | .[]' | while read -r req; do \
+		pip download $$req -d $@/bin/python-packages --no-deps; \
+	done
 	for file in $@/bin/python-packages/*; do \
 		unzip -o $$file -d $@/bin/python; \
 	done
