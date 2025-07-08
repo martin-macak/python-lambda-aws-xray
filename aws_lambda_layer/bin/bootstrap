@@ -1,8 +1,27 @@
 #!/bin/bash
 
+# AWS Lambda Layer Bootstrap Script for X-Ray Instrumentation
+#
+# This script modifies the Python runtime environment to include additional
+# site-packages from the Lambda layer, enabling automatic X-Ray instrumentation
+# through sitecustomize.py.
+#
+# Environment Variables:
+# - USER_SITE: Adds /opt/bin/python to Python's module search path
+# - ENABLE_USER_SITE: Enables the user site-packages directory
+#
+# When Python starts, it will automatically import sitecustomize.py from
+# /opt/bin/python, which triggers X-Ray instrumentation.
+
 args=("$@")
 
+# Set the user site-packages directory to include the layer's Python packages
+# This allows Python to find the aws-xray-sdk and wrapt packages from the layer
 export USER_SITE="/opt/bin/python"
+
+# Enable the user site-packages directory
+# This is required for Python to actually use the USER_SITE path
 export ENABLE_USER_SITE="1"
 
+# Execute the original Lambda runtime with the modified environment
 exec "${args[@]}"
