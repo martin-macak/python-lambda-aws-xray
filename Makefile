@@ -21,6 +21,9 @@ PWD := $(shell pwd)
 # Default target: build the layer zip file
 all: $(DIST_DIR)/layer.zip
 
+init:
+	uv sync --dev
+
 # Create the final layer zip file from the built layer directory
 $(DIST_DIR)/layer.zip: $(BUILD_DIR)/layer
 	@mkdir -p $(DIST_DIR)

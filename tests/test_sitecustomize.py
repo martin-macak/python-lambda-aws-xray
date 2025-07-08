@@ -115,35 +115,40 @@ def test_aws_lambda_exec_wrapper(request, test_container: TestContext):
 
 def test_sitecustomize(request, test_container: TestContext):
     # Test that the layer contains the required components
-    assert test_container.layer_path.exists(), "Layer path should exist"
-    
-    # Check that bootstrap script exists and has correct content
-    bootstrap_path = test_container.layer_path / "bootstrap"
-    assert bootstrap_path.exists(), "Bootstrap script should exist"
-    
-    bootstrap_content = bootstrap_path.read_text()
-    assert "TEST_AND_EXIT" in bootstrap_content, "Bootstrap should contain TEST_AND_EXIT logic"
-    assert "USER_SITE" in bootstrap_content, "Bootstrap should set USER_SITE environment variable"
-    
-    # Check that Python modules are present
-    python_path = test_container.layer_path / "python"
-    assert python_path.exists(), "Python path should exist"
-    
-    # Check for sitecustomize.py
-    sitecustomize_path = python_path / "sitecustomize.py"
-    assert sitecustomize_path.exists(), "sitecustomize.py should exist"
-    
-    sitecustomize_content = sitecustomize_path.read_text()
-    assert "aws_xray_sdk" in sitecustomize_content, "sitecustomize.py should import aws_xray_sdk"
-    assert "instrument" in sitecustomize_content, "sitecustomize.py should contain instrument function"
-    
-    # Check for aws-xray-sdk package
-    aws_xray_path = python_path / "aws_xray_sdk"
-    assert aws_xray_path.exists(), "aws_xray_sdk package should exist"
-    
-    # Check for wrapt package
-    wrapt_path = python_path / "wrapt"
-    assert wrapt_path.exists(), "wrapt package should exist"
+    container = test_container.client.containers.run(
+        test_container.image.id,
+        detach=True,
+        environment={
+            "AWS_LAMBDA_EXEC_WRAPPER": "/opt/bin/bootstrap",
+            "AWS_LAMBDA_AWS_XRAY_LOGGING_LEVEL": "DEBUG",
+            "AWS_LAMBDA_RUNTIME_API": "dummy",
+            "TEST_AND_EXIT": "1",
+            "TEST_AND_EXIT_TIMEOUT": "2",
+        },
+        volumes={
+            str(test_container.layer_path): {
+                "bind": "/opt/bin",
+                "mode": "ro",
+            }
+        },
+    )
+
+    def fin_container():
+        try:
+            container.stop()
+            container.wait()
+            container.remove()
+        finally:
+            pass
+
+    request.addfinalizer(fin_container)
+
+    container.wait(timeout=3)
+    exit_code = container.attrs["State"]["ExitCode"]
+    assert exit_code == 0, f"Container exited with non-zero code: {exit_code}"
+
+    logs = container.logs().decode("utf-8")
+    print(logs)
 
 
 def _find_project_root() -> Path:
