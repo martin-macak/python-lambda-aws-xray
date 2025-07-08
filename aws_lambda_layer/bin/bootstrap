@@ -24,4 +24,14 @@ export USER_SITE="/opt/bin/python"
 export ENABLE_USER_SITE="1"
 
 # Execute the original Lambda runtime with the modified environment
-exec "${args[@]}"
+if [ "$TEST_AND_EXIT" = "1" ]; then
+    timeout_secs="${TEST_AND_EXIT_TIMEOUT:-2}"
+    echo "TEST_AND_EXIT is set, running with timeout of ${timeout_secs}s"
+    timeout "${timeout_secs}s" "${args[@]}"
+    exit_code=$?
+    echo "TEST_AND_EXIT: Command output: $output"
+    echo "TEST_AND_EXIT: Command exited with code: $exit_code"
+    exit $exit_code
+else
+    exec "${args[@]}"
+fi

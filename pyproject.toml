@@ -11,5 +11,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "docker>=7.1.0",
+    "pytest>=8.4.1",
     "toml2json>=0.1.0",
 ]
