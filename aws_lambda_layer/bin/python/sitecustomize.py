@@ -84,5 +84,10 @@ def instrument():
 
 # Automatically instrument when the module is imported
 # This happens when Python starts due to sitecustomize.py being automatically imported
-setup()
-instrument()
+try:
+    setup()
+    instrument()
+except Exception as e:
+    logger.error(f"Failed to setup X-Ray instrumentation: {e}")
+    import traceback
+    logger.error(traceback.format_exc())

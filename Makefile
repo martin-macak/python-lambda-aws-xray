@@ -27,7 +27,7 @@ init:
 # Create the final layer zip file from the built layer directory
 $(DIST_DIR)/layer.zip: $(BUILD_DIR)/layer
 	@mkdir -p $(DIST_DIR)
-	cd $(BUILD_DIR)/layer && zip -r $(PWD)/$@ *
+	cd $(BUILD_DIR)/layer && zip -rX $(PWD)/$@ *
 
 # Build the layer directory with all necessary files and dependencies
 $(BUILD_DIR)/layer: $(LAYER_SRC_FILES) uv.lock
