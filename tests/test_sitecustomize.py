@@ -150,6 +150,9 @@ def test_sitecustomize(request, test_container: TestContext):
     logs = container.logs().decode("utf-8")
     print(logs)
 
+    assert "Permission denied" not in logs, "Permission denied message found in logs"
+    assert "Instrumenting AWS X-Ray" in logs, "Instrumenting AWS X-Ray message not found in logs"
+
 
 def _find_project_root() -> Path:
     current_dir = Path(__file__).parent
